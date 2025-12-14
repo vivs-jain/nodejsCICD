@@ -1,26 +1,26 @@
 const http = require('http');
 
-const server = http.createServer((req, res) => { // Corrected parameter order
-    const url = req.url;
-    console.log(url);
-    if (url === '/') {
-        // Set the content type header
-        res.setHeader('Content-Type', 'text/html'); 
+const express = require('express');
 
-        res.write('<html>');
-        res.write('<head><title>Nodejs web based application</title></head>');
-        res.write('<body><h1>Nodejs web based application</h1>');
-        res.write('<form action="/message" method="POST">');
-        res.write('<input type="text" name="message"> <button type="submit">Send</button>');
-        res.write('</form></body>');
-        res.write('</html>');
-        return res.end();
-    }
-    // Handle other routes or provide a default response
-    res.statusCode = 404;
-    res.end('<h1>Page Not Found</h1>');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+const adminRoutes = require('./routes/admin');
+
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+app.use(adminRoutes);
+
+app.use(shopRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).send('<h1> Page not found </h1>');
 });
 
-server.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
-});
+const server = http.createServer(app);
+
+app.listen(3000);
